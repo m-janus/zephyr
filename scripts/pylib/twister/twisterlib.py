@@ -3993,6 +3993,7 @@ class Lcov(CoverageTool):
     def __init__(self):
         super().__init__()
         self.ignores = []
+        self.includes = []
 
     def add_ignore_file(self, pattern):
         self.ignores.append('*' + pattern + '*')
@@ -4010,6 +4011,14 @@ class Lcov(CoverageTool):
         cmd_str = " ".join(cmd)
         logger.debug(f"Running {cmd_str}...")
         subprocess.call(cmd, stdout=coveragelog)
+
+        for i in self.includes:
+            subprocess.call(
+                ["lcov", "--gcov-tool", self.gcov_tool, "--extract",
+                 coveragefile, i, "--output-file",
+                 coveragefile, "--rc", "lcov_branch_coverage=1"],
+                stdout=coveragelog)
+
         # We want to remove tests/* and tests/ztest/test/* but save tests/ztest
         subprocess.call(["lcov", "--gcov-tool", self.gcov_tool, "--extract",
                          coveragefile,
@@ -4049,6 +4058,7 @@ class Gcovr(CoverageTool):
     def __init__(self):
         super().__init__()
         self.ignores = []
+        self.includes = []
 
     def add_ignore_file(self, pattern):
         self.ignores.append('.*' + pattern + '.*')
@@ -4065,12 +4075,13 @@ class Gcovr(CoverageTool):
         coveragefile = os.path.join(outdir, "coverage.json")
         ztestfile = os.path.join(outdir, "ztest.json")
 
+        includes = Gcovr._interleave_list("-f", self.includes)
         excludes = Gcovr._interleave_list("-e", self.ignores)
 
         # We want to remove tests/* and tests/ztest/test/* but save tests/ztest
         cmd = ["gcovr", "-r", self.base_dir, "--gcov-executable",
-               self.gcov_tool, "-e", "tests/*"] + excludes + ["--json", "-o",
-               coveragefile, outdir]
+               self.gcov_tool] + includes + ["-e", "tests/*"] + excludes + \
+              ["--json", "-o", coveragefile, outdir]
         cmd_str = " ".join(cmd)
         logger.debug(f"Running {cmd_str}...")
         subprocess.call(cmd, stdout=coveragelog)

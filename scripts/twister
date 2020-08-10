@@ -772,6 +772,9 @@ structure in the main Zephyr tree: boards/<arch>/<board_name>/""")
              "stdout detailing RAM/ROM sizes on the specified filenames. "
              "All other command line arguments ignored.")
 
+    parser.add_argument("--coverage-include", nargs='*', default=[],
+                        help="Include pattern.")
+
     return parser.parse_args()
 
 
@@ -1318,6 +1321,7 @@ def main():
         coverage_tool = CoverageTool.factory(options.coverage_tool)
         coverage_tool.gcov_tool = options.gcov_tool
         coverage_tool.base_dir = os.path.abspath(options.coverage_basedir)
+        coverage_tool.includes = options.coverage_include
         coverage_tool.add_ignore_file('generated')
         coverage_tool.add_ignore_directory('tests')
         coverage_tool.add_ignore_directory('samples')
