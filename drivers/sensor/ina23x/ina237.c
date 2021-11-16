@@ -167,6 +167,11 @@ static int ina237_attr_set(const struct device *dev, enum sensor_channel chan,
 	switch (attr) {
 	case SENSOR_ATTR_CONFIGURATION:
 		return ina23x_reg_write(&config->bus, INA237_REG_CONFIG, data);
+	case SENSOR_ATTR_RSHUNT:
+		data = ((INA237_INTERNAL_FIXED_SCALING_VALUE *
+			 config->current_lsb * val->val1)
+			/ 100);
+		__fallthrough;
 	case SENSOR_ATTR_CALIBRATION:
 		return ina23x_reg_write(&config->bus, INA237_REG_CALIB, data);
 	default:

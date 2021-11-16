@@ -307,6 +307,8 @@ enum sensor_attribute {
 	SENSOR_ATTR_FEATURE_MASK,
 	/** Alert threshold or alert enable/disable */
 	SENSOR_ATTR_ALERT,
+	/** Shunt resitor value in milliohms */
+	SENSOR_ATTR_RSHUNT,
 
 	/**
 	 * Number of all common sensor attributes.
