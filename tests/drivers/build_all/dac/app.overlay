@@ -53,6 +53,16 @@
 				label = "MCP4725";
 				#io-channel-cells = <1>;
 			};
+
+			test_i2c_mcp4728: mcp4728@61 {
+				compatible = "microchip,mcp4728";
+				reg = <0x61>;
+				label = "MCP4728";
+				voltage_reference = <0 0 0 0>;
+				power_down_mode = <0 0 0 0>;
+				#io-channel-cells = <1>;
+			};
+
 		};
 
 		test_spi: spi@33334444 {
