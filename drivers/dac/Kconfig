@@ -46,4 +46,6 @@ source "drivers/dac/Kconfig.mcp4725"
 
 source "drivers/dac/Kconfig.gd32"
 
+source "drivers/dac/Kconfig.mcp4728"
+
 endif # DAC
