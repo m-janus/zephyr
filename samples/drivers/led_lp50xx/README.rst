@@ -1,4 +1,4 @@
-.. _lp503x:
+.. _lp50xx:
 
 LP5030/6: 10 or 12 RGB channels
 ###############################
@@ -6,7 +6,7 @@ LP5030/6: 10 or 12 RGB channels
 Overview
 ********
 
-This sample controls up to 12 LEDs connected to a LP503x driver.
+This sample controls up to 12 LEDs connected to a LP50xx driver.
 
 First, for each LED information is retrieved using the led_get_info syscall
 and printed in the log messages. Next, from an infinite loop, a test pattern
@@ -31,8 +31,8 @@ Building and Running
 ********************
 
 This sample can be built and executed on boards with an I2C LP5030/6 LED driver
-connected. A node matching the "ti,lp503x" binding should be defined in the
-board DTS files.
+connected. A node matching the "ti,lp50xx", "ti,lp5030" binding should be
+defined in the board DTS files.
 
 As an example this sample provides a DTS overlay for the :ref:`lpcxpresso11u68`
 board (:file:`boards/lpcxpresso11u68.overlay`). It assumes that a I2C LP5030
