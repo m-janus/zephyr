@@ -52,6 +52,8 @@ LOG_MODULE_REGISTER(lp50xx);
 #define   CONFIG1_LED10_BANK_EN		BIT(2)
 #define   CONFIG1_LED11_BANK_EN		BIT(3)
 
+#define LP50XX_DEVICE_RESET		0x38
+
 #define LP50XX_BANK_BRIGHTNESS		0x4
 #define LP50XX_BANK_A_COLOR		0x5
 #define LP50XX_BANK_B_COLOR		0x6
@@ -67,6 +69,8 @@ LOG_MODULE_REGISTER(lp50xx);
 #define   CONFIG0_LED1_BANK_EN		BIT(1)
 #define   CONFIG0_LED2_BANK_EN		BIT(2)
 #define   CONFIG0_LED3_BANK_EN		BIT(3)
+
+#define LP50XX_DEVICE_RESET		0x17
 
 #define LP50XX_BANK_BRIGHTNESS		0x3
 #define LP50XX_BANK_A_COLOR		0x4
@@ -214,15 +218,14 @@ static int lp50xx_init(const struct device *dev)
 
 	/*
 	 * Since the status of the LP50xx controller is unknown when entering
-	 * this function, and since there is no way to reset it, then the whole
+	 * this function, at first there's a device reset applied and then the whole
 	 * configuration must be applied.
 	 */
 
-	/* Disable bank control for all LEDs. */
-	buf[0] = LP50XX_LED_CONFIG0;
-	buf[1] = 0;
-	buf[2] = 0;
-	err = i2c_write_dt(&config->bus, buf, 3);
+	/* Reset device */
+	buf[0] = LP50XX_DEVICE_RESET;
+	buf[1] = 0xff;
+	err = i2c_write_dt(&config->bus, buf, 2);
 	if (err < 0) {
 		return err;
 	}
