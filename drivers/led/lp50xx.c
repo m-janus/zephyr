@@ -12,6 +12,7 @@
  * @brief LP50xx LED controller
  */
 
+#include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/led.h>
 #include <zephyr/drivers/led/lp50xx.h>
@@ -85,6 +86,7 @@ struct lp50xx_config {
 	bool log_scale_en;
 	bool max_curr_opt;
 	const struct led_info *leds_info;
+	const struct gpio_dt_spec en_pin;
 };
 
 struct lp50xx_data {
@@ -203,6 +205,13 @@ static int lp50xx_init(const struct device *dev)
 		return -EINVAL;
 	}
 
+	/* Enable EN pin if given in devicetree. */
+	if (device_is_ready(config->en_pin.port)) {
+		gpio_pin_configure_dt(&config->en_pin, GPIO_OUTPUT_HIGH);
+		/* Power save mode deglitch time */
+		k_sleep(K_MSEC(40));
+	}
+
 	/*
 	 * Since the status of the LP50xx controller is unknown when entering
 	 * this function, and since there is no way to reset it, then the whole
@@ -250,47 +259,48 @@ static const struct led_driver_api lp50xx_led_api = {
 	.write_channels	= lp50xx_write_channels,
 };
 
-#define COLOR_MAPPING(led_node_id)				\
-const uint8_t color_mapping_##led_node_id[] =			\
+#define COLOR_MAPPING(led_node_id)					\
+const uint8_t color_mapping_##led_node_id[] =				\
 		DT_PROP(led_node_id, color_mapping);
 
-#define LED_INFO(led_node_id)					\
-{								\
-	.label		= DT_LABEL(led_node_id),		\
-	.index		= DT_PROP(led_node_id, index),		\
-	.num_colors	=					\
-		DT_PROP_LEN(led_node_id, color_mapping),	\
-	.color_mapping	= color_mapping_##led_node_id,		\
+#define LED_INFO(led_node_id)						\
+{									\
+	.label		= DT_LABEL(led_node_id),			\
+	.index		= DT_PROP(led_node_id, index),			\
+	.num_colors	=						\
+		DT_PROP_LEN(led_node_id, color_mapping),		\
+	.color_mapping	= color_mapping_##led_node_id,			\
 },
 
-#define LP50xx_DEVICE(id)					\
-								\
-DT_INST_FOREACH_CHILD(id, COLOR_MAPPING)			\
-								\
-static const struct led_info lp50xx_leds_##id[] = {		\
-	DT_INST_FOREACH_CHILD(id, LED_INFO)			\
-};								\
-								\
-static uint8_t lp50xx_chan_buf_##id[LP50XX_NUM_CHANNELS + 1];	\
-								\
-static struct lp50xx_config lp50xx_config_##id = {		\
-	.bus		= I2C_DT_SPEC_INST_GET(id),		\
-	.num_leds	= ARRAY_SIZE(lp50xx_leds_##id),		\
-	.max_curr_opt	= DT_INST_PROP(id, max_curr_opt),	\
-	.log_scale_en	= DT_INST_PROP(id, log_scale_en),	\
-	.leds_info	= lp50xx_leds_##id,			\
-};								\
-								\
-static struct lp50xx_data lp50xx_data_##id = {			\
-	.chan_buf	= lp50xx_chan_buf_##id,			\
-};								\
-								\
-DEVICE_DT_INST_DEFINE(id,					\
-		    &lp50xx_init,				\
-		    NULL,					\
-		    &lp50xx_data_##id,				\
-		    &lp50xx_config_##id,			\
-		    POST_KERNEL, CONFIG_LED_INIT_PRIORITY,	\
+#define LP50xx_DEVICE(id)						\
+									\
+DT_INST_FOREACH_CHILD(id, COLOR_MAPPING)				\
+									\
+static const struct led_info lp50xx_leds_##id[] = {				\
+	DT_INST_FOREACH_CHILD(id, LED_INFO)				\
+};									\
+									\
+static uint8_t lp50xx_chan_buf_##id[LP50XX_NUM_CHANNELS + 1];		\
+									\
+static struct lp50xx_config lp50xx_config_##id = {			\
+	.bus		= I2C_DT_SPEC_INST_GET(id),			\
+	.num_leds	= ARRAY_SIZE(lp50xx_leds_##id),			\
+	.max_curr_opt	= DT_INST_PROP(id, max_curr_opt),		\
+	.log_scale_en	= DT_INST_PROP(id, log_scale_en),		\
+	.leds_info	= lp50xx_leds_##id,				\
+	.en_pin		= GPIO_DT_SPEC_INST_GET_OR(id, en_gpios, {0}),	\
+};									\
+									\
+static struct lp50xx_data lp50xx_data_##id = {				\
+	.chan_buf	= lp50xx_chan_buf_##id,				\
+};									\
+									\
+DEVICE_DT_INST_DEFINE(id,						\
+		    &lp50xx_init,					\
+		    NULL,						\
+		    &lp50xx_data_##id,					\
+		    &lp50xx_config_##id,				\
+		    POST_KERNEL, CONFIG_LED_INIT_PRIORITY,		\
 		    &lp50xx_led_api);
 
 DT_INST_FOREACH_STATUS_OKAY(LP50xx_DEVICE)
