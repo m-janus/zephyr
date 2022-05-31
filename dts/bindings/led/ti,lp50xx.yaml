@@ -3,7 +3,7 @@
 
 description: TI LP503x LED controller node
 
-compatible: "ti,lp503x"
+compatible: "ti,lp50xx"
 
 include: ["i2c-device.yaml", "led-controller.yaml"]
 
