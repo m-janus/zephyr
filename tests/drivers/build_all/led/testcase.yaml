@@ -1,5 +1,10 @@
+common:
+  tags: drivers led
+  build_only: true
+  platform_allow: native_posix
 tests:
   drivers.led.build:
-    build_only: true
     min_ram: 32
-    tags: drivers
+  drivers.led.i2c.build:
+    tags: led_lp50xx led_lp5009 led_lp503x
+    extra_args: CONFIG_I2C=y CONFIG_LP50XX=y CONFIG_LP5009=y CONFIG_LP503X=y

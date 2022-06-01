@@ -31,5 +31,45 @@
 				label = "Test GPIO LED";
 			};
 		};
+
+		test_i2c: i2c@11112222 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			compatible = "vnd,i2c";
+			reg = <0x11112222 0x1000>;
+			label = "TEST_I2C_CTLR";
+			status = "okay";
+			clock-frequency = <100000>;
+
+			test_i2c_lp5009: lp5009@14 {
+				compatible = "ti,lp5009";
+				reg = <0x14>;
+				label = "LP5009";
+
+				led_0 {
+					label = "LED LP5009 0";
+					index = <0>;
+					color-mapping =
+						<0>,
+						<1>,
+						<2>;
+				};
+			};
+
+			test_i2c_lp503x: lp503x@15 {
+					compatible = "ti,lp503x";
+					reg = <0x14>;
+					label = "LP503x";
+
+					led_0 {
+						label = "LED LP503X 0";
+						index = <0>;
+						color-mapping =
+							<0>,
+							<1>,
+							<2>;
+					};
+			};
+		};
 	};
 };
