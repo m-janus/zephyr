@@ -3,3 +3,7 @@ tests:
     build_only: true
     min_ram: 32
     tags: drivers
+  drivers.led.i2c.build:
+    build_only: true
+    tags: led_lp50xx
+    extra_args: " CONFIG_I2C=y CONFIG_LP50XX=y CONFIG_LP5009_12=y"
