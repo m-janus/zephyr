@@ -30,7 +30,6 @@
 					 led * LP50XX_COLORS_PER_LED + 2)
 
 #ifdef CONFIG_LP503X
-#define LP50XX_MAX_LEDS			12
 
 /*
  * LED channels mapping.
@@ -42,15 +41,9 @@
 
 #endif /* CONFIG_LP503X */
 #ifdef CONFIG_LP5009_12
-#define LP50XX_MAX_LEDS			4
 
 /*
  * LED channels mapping.
- */
-#define LP50XX_NUM_CHANNELS		20
-
-/* LED color channels. */
-#define LP50XX_LED_COL_CHAN_BASE	8
 
 #endif /* CONFIG_LP5009_12 */
 

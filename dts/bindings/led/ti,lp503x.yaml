@@ -1,0 +1,3 @@
+compatible: "ti,lp503x"
+
+include: ti,lp50xx-common.yaml
