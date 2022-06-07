@@ -6,4 +6,4 @@ tests:
   drivers.led.i2c.build:
     build_only: true
     tags: led_lp50xx
-    extra_args: " CONFIG_I2C=y CONFIG_LP50XX=y CONFIG_LP5009_12=y"
+    extra_args: " CONFIG_I2C=y CONFIG_LP50XX=y CONFIG_LP5009=y CONFIG_LP503X=y"
